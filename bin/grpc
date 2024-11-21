@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'grpc'
+require_relative '../config/environment'
+
+Rails.logger = Logger.new(STDOUT)
+Rails.application.eager_load!
+
+def main
+  server = GRPC::RpcServer.new
+  server.add_http2_port('0.0.0.0:50091', :this_port_is_insecure)
+  server.handle(Grpc::Handler.handler)
+  Rails.logger.info "gRPC server running on 0.0.0.0:50091"
+  server.run_till_terminated
+end
+
+main
